@@ -1,10 +1,10 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthLayout from "../layouts/AuthLayout";
-import LoginPage from "../pages/loginPage";
-import RegisterPage from "../pages/registerPage";
 import ProtectedRoutes from "./ProtectedRoutes";
 import MainLayout from "../layouts/MainLayout";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const AppRoutes = () => {
   const router = createBrowserRouter([

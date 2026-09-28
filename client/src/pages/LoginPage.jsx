@@ -7,9 +7,14 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setError("");
+    setLoading(true);
 
     const formData = new FormData(e.target);
 
@@ -27,7 +32,16 @@ const LoginPage = () => {
 
       navigate("/main");
     } catch (error) {
-      console.log("Login failed:", error.response?.data || error.message);
+      console.log("Login failed:", error?.response?.data || error?.message);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Invalid email or password";
+
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,6 +58,13 @@ const LoginPage = () => {
         {/* Login Card */}
         <div className="bg-[#151515] border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -112,21 +133,23 @@ const LoginPage = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full py-3 rounded-lg bg-lime-400 text-black font-semibold hover:bg-lime-300 active:scale-[0.98] transition"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-lime-400 text-black font-semibold hover:bg-lime-300 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
           {/* Register */}
           <p className="text-center text-sm text-gray-400 mt-6">
             Don't have an account?{" "}
-            <a
-              href="/register"
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
               className="text-lime-400 hover:text-lime-300 font-medium"
             >
               Create account
-            </a>
+            </button>
           </p>
         </div>
 

@@ -1,13 +1,22 @@
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router";
 import { Auth } from "../context/AuthContext";
 
 const RegisterPage = () => {
   const { registerUser } = useContext(Auth);
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
 
     const formData = new FormData(e.target);
 
@@ -21,17 +30,38 @@ const RegisterPage = () => {
       const response = await registerUser(data);
 
       console.log("Registration successful:", response);
+
+      setSuccess("Account created successfully!");
+
+      // 1 second ke baad login page par
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+
     } catch (error) {
       console.log("Registration failed:", error);
+
+      // Backend ka message show karo
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Registration failed. Please try again.";
+
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
+
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white">Create Account</h1>
+          <h1 className="text-4xl font-bold text-white">
+            Create Account
+          </h1>
 
           <p className="text-gray-400 mt-2">
             Create your account to get started
@@ -40,7 +70,23 @@ const RegisterPage = () => {
 
         {/* Register Card */}
         <div className="bg-[#151515] border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+
           <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="p-3 rounded-lg bg-lime-400/10 border border-lime-400/30 text-lime-400 text-sm">
+                {success}
+              </div>
+            )}
+
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -99,22 +145,26 @@ const RegisterPage = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full py-3 rounded-lg bg-lime-400 text-black font-semibold hover:bg-lime-300 active:scale-[0.98] transition"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-lime-400 text-black font-semibold hover:bg-lime-300 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           {/* Login */}
           <p className="text-center text-sm text-gray-400 mt-6">
             Already have an account?{" "}
-            <a
-              href="/login"
+
+            <button
+              type="button"
+              onClick={() => navigate("/")}
               className="text-lime-400 hover:text-lime-300 font-medium"
             >
               Login
-            </a>
+            </button>
           </p>
+
         </div>
       </div>
     </div>
@@ -122,3 +172,4 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
