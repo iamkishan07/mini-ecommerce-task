@@ -134,6 +134,18 @@ export async function refresh(req, res) {
 
     const user = await userModel.findById(userId);
 
+    if (!user) {
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
+
+      return res.status(401).json({
+        message: "User not found",
+      });
+    }
+
     if (refreshToken != user.refreshToken) {
       await userModel.findByIdAndUpdate(user._id, {
         refreshToken: null,
@@ -160,6 +172,9 @@ export async function refresh(req, res) {
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
