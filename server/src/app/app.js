@@ -6,9 +6,15 @@ import cors from "cors";
 
 const app = express();
 
+const allowedOrigins = [
+  "https://mini-ecommerce-task.vercel.app",
+  "https://mini-ecommerce-task-5pi6aahuk-kishaniam401-gmailcoms-projects.vercel.app",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
-    origin: "https://mini-ecommerce-task.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
